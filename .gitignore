@@ -1,0 +1,5 @@
+*.img
+*.hdr
+*.xml
+*.pyc
+*.iml

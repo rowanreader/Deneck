@@ -35,7 +35,7 @@ if __name__ == "__main__":
                                      epilog=helpStr, formatter_class=RawTextHelpFormatter)
     parser.add_argument("path")
     parser.add_argument('-o', '--output', default="denecked.img")
-    parser.add_argument("-b", "--bit", choices=[8,16], default=8)
+    parser.add_argument("-b", "--bit", choices=[8,16], default=8, type=int)
     args = parser.parse_args()
 
     dirs = os.listdir(args.path)

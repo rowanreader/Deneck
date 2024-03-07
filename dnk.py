@@ -19,11 +19,12 @@ def deneck(head, dotFile, outputFile, fileType):
     # get image data
     image = data.get_fdata()
     # header data
-    hd = data.header
 
 
     print(f'Loading {head}...')
     data2 = nib.load(head)
+
+    hd = data2.header
     if fileType == 16:
         bitType = np.int16
     elif fileType == 8:
@@ -43,8 +44,8 @@ def deneck(head, dotFile, outputFile, fileType):
     print(f'cutoff: {cutoff}')
     # image to stamp mask on to
 
-
-    image2[:, :, :cutoff] = 0
+    # image2[:, :, :cutoff] = 0
+    image2 = image2[:, :, cutoff:]
     t1Root = head.split(".", 1) # split only once on the first .
     # hdr = f'{t1Root[0]}.hdr'
     # newT1 = f'{t1Root[0]}_withNeck.{t1Root[1]}'
@@ -58,8 +59,14 @@ def deneck(head, dotFile, outputFile, fileType):
     # reorient
     # nib.orientations.apply_orientation(image2, nib.orientations.axcodes2ornt(('R', 'P', 'I')))
     print(f"Saving denecked as {newT1}...")
-    final_img = nib.Nifti1Image(image2, data2.affine)
+    if t1Root[1] == "img":
+        final_img = nib.AnalyzeImage(image2, data2.affine)
+        print("Saving as Analyze Image")
+    else:
+        final_img = nib.Nifti1Image(image2, data2.affine)
+        print("Saving as Nifti Image")
     nib.save(final_img, newT1) # now saving to T1, not output
+    print("confirmed")
     print("Done!")
 
 
@@ -104,7 +111,7 @@ if __name__ == "__main__":
 
     # if they want to change the save file
     parser.add_argument('-o', '--output', default="denecked.img")
-    parser.add_argument('-b', '--bit', default=8, choices=[8, 16])
+    parser.add_argument('-b', '--bit', default=8, choices=[8, 16], type=int)
 
     args = parser.parse_args()
 
